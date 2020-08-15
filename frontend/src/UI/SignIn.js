@@ -12,6 +12,7 @@ import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
+import axios from 'axios';
 
 function Copyright() {
     return (
@@ -61,8 +62,8 @@ class SignIn extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            username: "null",
-            password: "null"
+            username: undefined,
+            password: undefined
         };
         this.handleChangeUsername = this.handleChangeUsername.bind(this);
         this.handleChangePassword = this.handleChangePassword.bind(this);
@@ -84,26 +85,37 @@ class SignIn extends React.Component {
     handleSubmit() {
         const { username, password } = this.state;
 
-        const body = {
+        var body = {
             username,
             password
         };
 
-        fetch("http://localhost:5000/registration", {
-            headers: {
-                "Content-Type": "application/json"
-            },
-            method: "post",
-            body: JSON.stringify(body)
-        }).then(res => res.json())
-            .then(
-                result => {
-                    console.log("succesful", result)
-                },
-                error => {
-                    console.log("an error occured", error)
-                }
-            )
+        // console.log(body)
+
+        axios.post('http://localhost:5000/registration', body)
+        // .then(res => {
+        //     console.log(res)
+        //     console.log("login succesful")
+        // }).catch(err => {
+        //     console.log(err)
+        //     console.log("error")
+        // })
+
+        // fetch("http://localghost:5000/registration", {
+        //     headers: {
+        //         "Content-Type": "application/json"
+        //     },
+        //     method: "post",
+        //     body: JSON.stringify(body)
+        // }).then(res => res.json())
+        //     .then(
+        //         result => {
+        //             console.log("succesful", result)
+        //         },
+        //         error => {
+        //             console.log("an error occured", error)
+        //         }
+        //     )
     }
 
     render() {
@@ -132,7 +144,7 @@ class SignIn extends React.Component {
                                 autoComplete="email"
                                 autoFocus
                                 value={this.state.username}
-                                onChange={(event) => this.handleChangeUsername(event)}
+                                onChange={this.handleChangeUsername}
                             />
                             <TextField
                                 variant="outlined"
@@ -145,7 +157,7 @@ class SignIn extends React.Component {
                                 id="password"
                                 autoComplete="current-password"
                                 value={this.state.password}
-                                onChange={(event) => this.handleChangePassword(event)}
+                                onChange={this.handleChangePassword}
                             />
                             <FormControlLabel
                                 control={<Checkbox value="remember" color="primary" />}
@@ -158,6 +170,7 @@ class SignIn extends React.Component {
                                 color="primary"
                                 className={classes.submit}
                                 onClick={this.handleSubmit}
+
                             >
                                 Sign In
             </Button>

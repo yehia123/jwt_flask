@@ -1,15 +1,15 @@
 from flask_restful import Resource, reqparse
 from models import UserModel, RevokedTokenModel
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
-
-parser = reqparse.RequestParser()
-parser.add_argument('username', help='This field cannot be blank', required=True)
-parser.add_argument('password', help='This field cannot be blank', required=True)
+from flask import request 
+# parser = reqparse.RequestParser()
+# parser.add_argument('username', help='This field cannot be blank', required=True)
+# parser.add_argument('password', help='This field cannot be blank', required=True)
 
 class UserRegistration(Resource):
     def post(self):
-        data = parser.parse_args()
-
+        data = request.get_json()
+        print(data)
         if UserModel.find_by_username(data['username']):
             return {'message': 'User {} already exists'. format(data['username'])}
 
@@ -32,7 +32,7 @@ class UserRegistration(Resource):
 
 class UserLogin(Resource):
     def post(self):
-        data = parser.parse_args()
+        data = request.get_json()
 
         current_user = UserModel.find_by_username(data['username'])
         if not current_user:
@@ -98,3 +98,34 @@ class SecretResource(Resource):
         return {
             'answer': 42
         }
+
+class VideoRecognition(Resource):
+    def get(self):
+        cascPath = "./haarcascade_frontalface_default.xml"
+        faceCascade = cv2.CascadeClassifier(cascPath)
+
+        cap = cv2.VideoCapture(0)
+        face_locations = []
+
+        while True:
+            ret, frame = cap.read()
+
+            # gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            rgb_frame = frame[:, :, ::-1]
+
+            #find all locations
+            facelocations = face_recognition.face_locations(rgb_frame)
+
+            for top, right, bottom, left in facelocations:
+                cv2.rectangle(frame, (left, top), (right,bottom), (0,0,255), 2)
+
+            cv2.imshow('video', frame)
+
+            k = cv2.waitKey(30) & 0xff
+            if k==27:
+                break
+
+
+        cap.release()
+        cv2.destroyAllWindows()
+        return {"done": 0}

@@ -2,8 +2,10 @@ from flask import Flask
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
+cors = CORS(app)
 api = Api(app)
 db = SQLAlchemy(app)
 
@@ -23,6 +25,7 @@ app.config['SECRET_KEY'] = 'ya-bun-tu'
 app.config['JWT_SECRET_KEY'] = 'jwt-secret-string'
 app.config['JWT_BLACKLIST_ENABLED']= True
 app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
+app.config["CORS_HEADERS"] = 'Content-Type'
 
 jwt = JWTManager(app)
 
